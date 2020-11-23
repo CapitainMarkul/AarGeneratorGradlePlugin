@@ -1,0 +1,52 @@
+buildscript {
+    ext.kotlinVersion = '1.4.10'
+    ext.javaVersion = JavaVersion.VERSION_1_8
+
+    repositories {
+        mavenLocal()
+    }
+
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
+    }
+}
+
+plugins {
+    id 'java-gradle-plugin'
+}
+
+apply plugin: 'kotlin'
+
+//For dependencies implementation
+repositories {
+    mavenCentral()
+    jcenter() //Kotlin
+    google() //Gradle plugin
+}
+
+group 'ru.aar_generator.plugin'
+version '0.0.1'
+
+sourceCompatibility = rootProject.ext.javaVersion
+targetCompatibility = rootProject.ext.javaVersion
+
+dependencies {
+    implementation gradleApi()
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
+    implementation "com.android.tools.build:gradle:4.0.1"
+}
+
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = rootProject.ext.javaVersion
+    }
+}
+
+gradlePlugin {
+    plugins {
+        aarSugarPlugin {
+            id = "aar_generator_plugin"
+            implementationClass = "ru.aar_generator.plugin.AarGeneratorPlugin"
+        }
+    }
+}
