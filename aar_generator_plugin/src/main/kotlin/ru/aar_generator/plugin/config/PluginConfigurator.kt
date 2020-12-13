@@ -1,7 +1,9 @@
 package ru.aar_generator.plugin.config
 
-import ru.aar_generator.plugin.config.option.subproject.ApplyForAllSubProjectOption
-import ru.aar_generator.plugin.config.option.subproject.ApplyForAllSubProjectOptionApi
+import ru.aar_generator.plugin.config.option.milestones.MilestonesVersionOption
+import ru.aar_generator.plugin.config.option.milestones.MilestonesVersionOptionApi
+import ru.aar_generator.plugin.config.option.script.ReplaceProjectToAarOption
+import ru.aar_generator.plugin.config.option.script.ReplaceProjectToAarOptionApi
 import ru.aar_generator.plugin.config.option.variant.VariantOption
 import ru.aar_generator.plugin.config.option.variant.VariantOptionApi
 
@@ -11,14 +13,24 @@ open class PluginConfigurator : PluginConfiguratorApi {
     /*** Файл конфигурации плагина */
     class Config :
         VariantOptionApi.Variable,
-        ApplyForAllSubProjectOptionApi.Variable {
-        override var targetPlatform: VariantOptionApi.Platform? = null
-        override var applyForAllSubProjects: Boolean = true
+        ReplaceProjectToAarOptionApi.Variable,
+        MilestonesVersionOptionApi.Variable {
+
+        override var targetPlatform: VariantOptionApi.Platform = VariantOptionApi.Platform.MULTI
+        override var needRunReplaceProjectToAarScript: Boolean = false
+        override var milestonesVersion: String = ""
 
         fun createConfigurationLog(): String {
-            return "* targetPlatform -> $targetPlatform\n" +
-                    "* applyForAllSubProjects -> $applyForAllSubProjects"
+            return StringBuilder().apply {
+                append(createConfigurationLog("targetPlatform", targetPlatform))
+                append(createConfigurationLog(
+                    "needRunReplaceProjectToAarScript", needRunReplaceProjectToAarScript
+                ))
+                append(createConfigurationLog("milestonesVersion", milestonesVersion))
+            }.toString()
         }
+
+        private fun createConfigurationLog(name: String, value: Any?) = "* $name -> $value\n"
     }
 
     private var currentPluginConfig = Config()
@@ -35,6 +47,9 @@ open class PluginConfigurator : PluginConfiguratorApi {
     override val variantOptionApi: VariantOptionApi =
         VariantOption(currentPluginConfig)
 
-    override val applyForAllSubProjectOptionApi: ApplyForAllSubProjectOptionApi =
-        ApplyForAllSubProjectOption(currentPluginConfig)
+    override val replaceProjectToAarOptionApi: ReplaceProjectToAarOptionApi =
+        ReplaceProjectToAarOption(currentPluginConfig)
+
+    override val milestonesVersionOptionApi: MilestonesVersionOptionApi =
+        MilestonesVersionOption(currentPluginConfig)
 }
