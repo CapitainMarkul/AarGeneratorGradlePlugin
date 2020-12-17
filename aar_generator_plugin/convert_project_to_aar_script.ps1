@@ -23,7 +23,7 @@ $implementation="implementation"
 $api="api"
 $testImplementation="testImplementation"
 
-$aarName="'ru.aar_generator:" + $projectName + "_" + $projectMilestones + "_" + $projectFlavour + "."
+$aarName="'ru.aar_generator." + $projectName + "_" + $projectMilestones + "_" + $projectFlavour + ":"
 $aarVersion=":0.0.1'"
 
 #project(':
@@ -71,6 +71,9 @@ function Get-ReplaceImplementation(
             } elseif($modifierLine -match """\)") {
                 #")
                 $resultFile.Add($modifierLine.Replace(""")", $aarVersion))
+            } elseif($modifierLine -match "' \)") {
+                #' )
+                $resultFile.Add($modifierLine.Replace("' )", $aarVersion))
             }
             else {
                 $resultFile.Add($modifierLine)
